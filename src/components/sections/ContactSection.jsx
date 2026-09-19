@@ -9,7 +9,7 @@ const contactItems = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'your.email@gmail.com',
+    value: personalInfo.email,
     href: `mailto:${personalInfo.email}`,
     color: '#6366f1',
     desc: 'Drop me an email anytime',
@@ -17,7 +17,7 @@ const contactItems = [
   {
     icon: Github,
     label: 'GitHub',
-    value: 'github.com/yourusername',
+    value: socialLinks.github.replace('https://', ''),
     href: socialLinks.github,
     color: '#e2e8f0',
     desc: 'Check out my repositories',
@@ -25,10 +25,10 @@ const contactItems = [
   {
     icon: Linkedin,
     label: 'LinkedIn',
-    value: 'Connect with me',
+    value: 'Mahathir Mohammad',
     href: socialLinks.linkedin,
     color: '#06b6d4',
-    desc: 'Let\'s connect professionally',
+    desc: "Let's connect professionally",
   },
   {
     icon: MapPin,

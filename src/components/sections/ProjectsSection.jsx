@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ExternalLink, Github, ChevronDown, ChevronUp, Star } from 'lucide-react'
-import { projects, projectCategories } from '../../data/portfolioData'
+import { ExternalLink, Github, ChevronDown, ChevronUp, Star, RefreshCw } from 'lucide-react'
+import { api } from '../../lib/api'
+import { projects as fallbackProjects, projectCategories as fallbackCategories } from '../../data/portfolioData'
 
 function ProjectCard({ project, index }) {
   const [expanded, setExpanded] = useState(false)
@@ -79,7 +80,7 @@ function ProjectCard({ project, index }) {
       {/* Card Content */}
       <div className="p-5 flex flex-col flex-1">
         {/* Category */}
-        <span className="tag w-fit mb-3">{project.category}</span>
+        <span className="tag w-fit mb-3">{project.category || 'Full Stack'}</span>
 
         {/* Title */}
         <h3 className="text-lg font-display font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
@@ -92,23 +93,27 @@ function ProjectCard({ project, index }) {
         </p>
 
         {/* Tech Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.tags.slice(0, 4).map((tag) => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
-          {project.tags.length > 4 && (
-            <span className="tag">+{project.tags.length - 4}</span>
-          )}
-        </div>
+        {project.tags && project.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {project.tags.slice(0, 4).map((tag) => (
+              <span key={tag} className="tag">{tag}</span>
+            ))}
+            {project.tags.length > 4 && (
+              <span className="tag">+{project.tags.length - 4}</span>
+            )}
+          </div>
+        )}
 
         {/* Expand Button */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mb-3"
-        >
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          {expanded ? 'Less details' : 'More details'}
-        </button>
+        {(project.longDescription || (project.highlights && project.highlights.length > 0)) && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mb-3"
+          >
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            {expanded ? 'Less details' : 'More details'}
+          </button>
+        )}
 
         {/* Expandable highlights */}
         <AnimatePresence>
@@ -120,15 +125,19 @@ function ProjectCard({ project, index }) {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <p className="text-slate-400 text-sm leading-relaxed mb-3">{project.longDescription}</p>
-              <div className="space-y-1.5">
-                {project.highlights.map((h) => (
-                  <div key={h} className="flex items-start gap-2 text-sm text-slate-300">
-                    <span className="text-indigo-400 mt-0.5 flex-shrink-0">▸</span>
-                    {h}
-                  </div>
-                ))}
-              </div>
+              {project.longDescription && (
+                <p className="text-slate-400 text-sm leading-relaxed mb-3">{project.longDescription}</p>
+              )}
+              {project.highlights && project.highlights.length > 0 && (
+                <div className="space-y-1.5 mb-3">
+                  {project.highlights.map((h) => (
+                    <div key={h} className="flex items-start gap-2 text-sm text-slate-300">
+                      <span className="text-indigo-400 mt-0.5 flex-shrink-0">▸</span>
+                      {h}
+                    </div>
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -164,10 +173,34 @@ function ProjectCard({ project, index }) {
 }
 
 export default function ProjectsSection() {
+  const [projectsList, setProjectsList] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.05 })
 
-  const filtered = projects.filter(
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await api.projects.getAll()
+        if (Array.isArray(data) && data.length > 0) {
+          setProjectsList(data)
+        } else {
+          setProjectsList(fallbackProjects)
+        }
+      } catch (err) {
+        console.warn('Could not fetch projects from API, falling back to local data:', err)
+        setProjectsList(fallbackProjects)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProjects()
+  }, [])
+
+  // Derive categories dynamically from available projects
+  const availableCategories = ['All', ...new Set(projectsList.map(p => p.category).filter(Boolean))]
+
+  const filtered = projectsList.filter(
     (p) => activeFilter === 'All' || p.category === activeFilter
   )
 
@@ -194,7 +227,7 @@ export default function ProjectsSection() {
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap gap-2 justify-center mb-10">
-          {projectCategories.map((cat) => (
+          {availableCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveFilter(cat)}
@@ -209,19 +242,27 @@ export default function ProjectsSection() {
           ))}
         </div>
 
-        {/* Projects Grid */}
-        <motion.div
-          layout
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <AnimatePresence mode="popLayout">
-            {filtered.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+        {/* Loading state */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+            <p className="text-slate-400 text-sm">Loading projects...</p>
+          </div>
+        ) : (
+          /* Projects Grid */
+          <motion.div
+            layout
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <AnimatePresence mode="popLayout">
+              {filtered.map((project, i) => (
+                <ProjectCard key={project._id || project.id || i} project={project} index={i} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div className="text-center py-20 text-slate-500">
             <p className="text-5xl mb-4">🔍</p>
             <p>No projects in this category yet.</p>
@@ -237,7 +278,7 @@ export default function ProjectsSection() {
         >
           <p className="text-slate-400 mb-4">Want to see more of my work?</p>
           <a
-            href="https://github.com/yourusername"
+            href="https://github.com/grontho69"
             target="_blank"
             rel="noreferrer"
             className="btn-secondary inline-flex"

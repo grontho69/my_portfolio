@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { TypeAnimation } from 'react-type-animation'
 import { Github, Linkedin, Mail, Download, ArrowDown, MapPin, Zap } from 'lucide-react'
-import { personalInfo, socialLinks } from '../data/portfolioData'
+import { personalInfo, socialLinks } from '../../data/portfolioData'
 
 export default function HeroSection() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -194,16 +194,16 @@ export default function HeroSection() {
 
             {/* Profile Image Frame */}
             <div
-              className="absolute inset-2 rounded-full overflow-hidden"
+              className="absolute inset-2 rounded-full overflow-hidden bg-dark-700"
               style={{
-                border: '2px solid rgba(99, 102, 241, 0.3)',
-                boxShadow: '0 0 40px rgba(99, 102, 241, 0.3), inset 0 0 40px rgba(99, 102, 241, 0.05)',
+                border: '2px solid rgba(99, 102, 241, 0.4)',
+                boxShadow: '0 0 50px rgba(99, 102, 241, 0.35), inset 0 0 30px rgba(99, 102, 241, 0.1)',
               }}
             >
               <img
                 src={personalInfo.profileImage}
                 alt={personalInfo.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-[center_15%] transition-transform duration-500 hover:scale-105"
                 onError={(e) => {
                   // Fallback avatar with initials
                   e.target.style.display = 'none'

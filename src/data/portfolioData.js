@@ -6,22 +6,22 @@ export const personalInfo = {
   name: 'Mahathir Mohammad',
   tagline: 'Full Stack Developer & MERN Specialist',
   shortBio:
-    "I'm a passionate Full Stack Developer specializing in the MERN stack. I love building scalable, performant web applications with clean code and exceptional user experiences.",
+    "I'm a passionate Full Stack Developer specializing in the MERN stack & Next.js. I love building scalable, performant web applications with clean code and exceptional user experiences.",
   longBio:
-    "With deep expertise in modern web technologies, I craft end-to-end solutions from responsive frontends to robust backends. My focus is on writing clean, maintainable code and delivering products that users love. I'm always exploring new technologies to stay ahead of the curve.",
+    "With deep expertise in modern web technologies (React, Next.js, Node.js, NestJS, TypeScript, MongoDB, Docker), I craft end-to-end solutions from responsive frontends to robust backends. My focus is on writing clean, maintainable code and delivering products that users love.",
   location: 'Bangladesh',
-  available: true, // Set to false when not open to work
-  email: 'your.email@gmail.com', // TODO: Add your email
-  phone: '', // TODO: Add your phone (optional)
-  resumeLink: '/resume.pdf', // Place your resume in /public/resume.pdf
-  profileImage: '/profile.jpg', // Place your photo in /public/profile.jpg
+  available: true,
+  email: 'mahathirm880@gmail.com',
+  phone: '',
+  resumeLink: '/resume.pdf',
+  profileImage: '/profile.jpg',
 }
 
 export const socialLinks = {
-  github: 'https://github.com/yourusername', // TODO: Add your GitHub
-  linkedin: 'https://linkedin.com/in/yourprofile', // TODO: Add your LinkedIn
-  twitter: '', // TODO: Add your Twitter/X (optional)
-  website: '', // TODO: Any other website (optional)
+  github: 'https://github.com/grontho69',
+  linkedin: 'https://www.linkedin.com/in/mahathir-mohammad-4073b33b2/',
+  twitter: '',
+  website: '',
 }
 
 export const navItems = [
@@ -43,12 +43,12 @@ export const skillCategories = [
     icon: '🎨',
     color: 'from-blue-500 to-cyan-500',
     skills: [
-      { name: 'React.js', level: 90, icon: '⚛️' },
-      { name: 'Next.js', level: 85, icon: '▲' },
-      { name: 'TypeScript', level: 82, icon: '🔷' },
-      { name: 'JavaScript', level: 92, icon: '🟨' },
-      { name: 'Tailwind CSS', level: 88, icon: '🎨' },
-      { name: 'HTML / CSS', level: 95, icon: '🌐' },
+      { name: 'React.js', level: 92, icon: '⚛️' },
+      { name: 'Next.js', level: 90, icon: '▲' },
+      { name: 'TypeScript', level: 85, icon: '🔷' },
+      { name: 'JavaScript', level: 95, icon: '🟨' },
+      { name: 'Tailwind CSS', level: 92, icon: '🎨' },
+      { name: 'Framer Motion', level: 88, icon: '✨' },
     ],
   },
   {
@@ -56,12 +56,12 @@ export const skillCategories = [
     icon: '⚙️',
     color: 'from-indigo-500 to-purple-500',
     skills: [
-      { name: 'Node.js', level: 88, icon: '🟢' },
-      { name: 'NestJS', level: 80, icon: '🔴' },
-      { name: 'Express.js', level: 88, icon: '🚂' },
-      { name: 'REST API', level: 90, icon: '🔌' },
-      { name: 'GraphQL', level: 70, icon: '◈' },
-      { name: 'WebSocket', level: 72, icon: '⚡' },
+      { name: 'Node.js', level: 90, icon: '🟢' },
+      { name: 'NestJS', level: 82, icon: '🔴' },
+      { name: 'Express.js', level: 90, icon: '🚂' },
+      { name: 'Fastify', level: 80, icon: '⚡' },
+      { name: 'REST & GraphQL', level: 88, icon: '🔌' },
+      { name: 'WebSockets', level: 82, icon: '💬' },
     ],
   },
   {
@@ -69,11 +69,11 @@ export const skillCategories = [
     icon: '🗄️',
     color: 'from-emerald-500 to-teal-500',
     skills: [
-      { name: 'MongoDB', level: 88, icon: '🍃' },
+      { name: 'MongoDB', level: 92, icon: '🍃' },
+      { name: 'PostgreSQL', level: 85, icon: '🐘' },
       { name: 'MySQL', level: 82, icon: '🐬' },
-      { name: 'PostgreSQL', level: 72, icon: '🐘' },
-      { name: 'Redis', level: 68, icon: '🔴' },
-      { name: 'Mongoose', level: 88, icon: '🍃' },
+      { name: 'Drizzle ORM / Prisma', level: 82, icon: '💎' },
+      { name: 'Redis', level: 75, icon: '🔴' },
     ],
   },
   {
@@ -81,78 +81,117 @@ export const skillCategories = [
     icon: '🛠️',
     color: 'from-orange-500 to-red-500',
     skills: [
-      { name: 'Docker', level: 78, icon: '🐳' },
+      { name: 'Docker', level: 82, icon: '🐳' },
       { name: 'Git & GitHub', level: 92, icon: '🐙' },
-      { name: 'Linux', level: 75, icon: '🐧' },
-      { name: 'Nginx', level: 68, icon: '🌐' },
-      { name: 'AWS (S3, EC2)', level: 65, icon: '☁️' },
-      { name: 'CI/CD', level: 70, icon: '🔄' },
+      { name: 'Linux', level: 80, icon: '🐧' },
+      { name: 'Nginx / CI/CD', level: 75, icon: '🔄' },
+      { name: 'Vercel / Netlify', level: 90, icon: '▲' },
     ],
   },
 ]
 
 // ============================================================
-// PROJECTS — Add your projects here
+// PROJECTS — Real projects showcasing Mahathir's expertise
 // ============================================================
 export const projects = [
   {
     id: 1,
-    title: 'Project Name 1',
+    title: 'Volans – E-Commerce Platform',
     description:
-      'A powerful full-stack web application built with MERN stack. Features real-time data, authentication, and seamless UX.',
+      'Full-stack modern clothing & apparel platform built for seamless shopping experiences with sleek micro-interactions.',
     longDescription:
-      'This project was built to solve [specific problem]. Key highlights include JWT authentication, real-time updates with WebSocket, optimized MongoDB queries, and a fully responsive UI.',
-    image: '/projects/project1.png', // TODO: Add project screenshot
-    tags: ['React.js', 'Node.js', 'MongoDB', 'Express.js', 'Tailwind CSS'],
+      'Full-stack modern clothing & apparel platform built for seamless shopping experiences with sleek micro-interactions, complete product catalog, dynamic cart, checkout, and admin management.',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=80',
+    tags: ['Next.js 14', 'MongoDB', 'Tailwind CSS', 'GSAP', 'Stripe'],
     category: 'Full Stack',
-    liveLink: 'https://project1-demo.com', // TODO: Add live link
-    githubLink: 'https://github.com/yourusername/project1', // TODO: Add GitHub repo
+    liveLink: 'https://e-commerce-eta-kohl-38.vercel.app/',
+    githubLink: 'https://github.com/grontho69',
     featured: true,
     highlights: [
-      'JWT Authentication & Authorization',
-      'Real-time updates with WebSocket',
-      'RESTful API with Express.js',
-      'Responsive design with Tailwind CSS',
+      'Dynamic Cart & Checkout with sleek micro-interactions',
+      'Comprehensive Admin Management dashboard',
+      'Stripe Payment Gateway integration for secure billing',
+      'Secure Auth & Session Handling with optimized MongoDB queries',
     ],
   },
   {
     id: 2,
-    title: 'Project Name 2',
+    title: 'EduTec 1.0 – STEM Exam Engine',
     description:
-      'A Next.js powered web application with TypeScript, featuring SSR, dynamic routing, and seamless backend integration.',
+      'High-concurrency online admission exam platform with sub-millisecond ranking algorithms & zero-data-loss architecture.',
     longDescription:
-      'Built with Next.js 14 and TypeScript, this application leverages server-side rendering for optimal performance and SEO. Integrates with MySQL for data persistence and NestJS for the API layer.',
-    image: '/projects/project2.png', // TODO: Add project screenshot
-    tags: ['Next.js', 'TypeScript', 'NestJS', 'MySQL', 'Docker'],
+      'High-concurrency competitive admission testing platform with an anti-cheat proctoring engine, sub-millisecond leaderboard calculation, and offline resilience.',
+    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&auto=format&fit=crop&q=80',
+    tags: ['Next.js 15', 'React 19', 'TypeScript', 'Fastify 5', 'PostgreSQL', 'Drizzle ORM', 'KaTeX', 'Tailwind CSS'],
     category: 'Full Stack',
-    liveLink: 'https://project2-demo.com', // TODO: Add live link
-    githubLink: 'https://github.com/yourusername/project2', // TODO: Add GitHub repo
+    liveLink: 'https://web-theta-jade-69.vercel.app/',
+    githubLink: 'https://github.com/grontho69/edu_tec_1.0',
     featured: true,
     highlights: [
-      'Server-Side Rendering (SSR)',
-      'TypeScript for type safety',
-      'NestJS REST API backend',
-      'Dockerized deployment',
+      'Offline-resilient exam hall powered by IndexedDB',
+      'Anti-cheat automated proctoring engine',
+      'Top-K Min-Heap real-time leaderboard computation',
+      'Topic Dependency DAG & dynamic KaTeX LaTeX rendering',
     ],
   },
   {
     id: 3,
-    title: 'Project Name 3',
+    title: 'ZENJI (ゼンジ) – Cyberpunk Streetwear',
     description:
-      'An e-commerce platform with cart management, payment integration, and an admin dashboard for product management.',
+      'High-end cyberpunk & anime-inspired apparel store featuring heavyweight textiles (460–520 GSM) and tactical ergonomics.',
     longDescription:
-      'A complete e-commerce solution featuring product catalog, shopping cart, secure checkout with payment gateway, and a full-featured admin panel for managing products, orders, and users.',
-    image: '/projects/project3.png', // TODO: Add project screenshot
-    tags: ['React.js', 'Node.js', 'MongoDB', 'Redux', 'Stripe'],
-    category: 'Full Stack',
-    liveLink: 'https://project3-demo.com', // TODO: Add live link
-    githubLink: 'https://github.com/yourusername/project3', // TODO: Add GitHub repo
-    featured: false,
+      'Cutting-edge cyberpunk fashion commerce experience with interactive PDP size guide, multi-axis category filters, slide-over cart with free shipping meter, and gamified confetti checkout.',
+    image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80',
+    tags: ['Next.js 14', 'React', 'TypeScript', 'Tailwind CSS', 'Zustand', 'Framer Motion', 'Canvas Confetti'],
+    category: 'Frontend',
+    liveLink: 'https://zenji-project.vercel.app/',
+    githubLink: 'https://github.com/grontho69/zenji-project',
+    featured: true,
     highlights: [
-      'Product catalog with filtering',
-      'Shopping cart with Redux',
-      'Stripe payment integration',
-      'Admin dashboard & analytics',
+      'Multi-axis category & silhouette filter matrix',
+      'Dynamic PDP with interactive size guide & visual preview',
+      'Framer Motion slide-over cart with free shipping meter',
+      'Gamified interactive confetti checkout experience',
+    ],
+  },
+  {
+    id: 4,
+    title: 'FoodFlow – Restaurant & Delivery Platform',
+    description:
+      'Production-ready culinary operations & delivery ecosystem featuring dedicated workflows for customers, kitchens, and riders.',
+    longDescription:
+      'Complete restaurant and on-demand food delivery architecture uniting 4 discrete operational interfaces: Customer ordering, Kitchen Display System (KDS), Logistics Rider Dispatch, and Admin Control.',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=80',
+    tags: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS', 'MongoDB', 'Mongoose', 'Leaflet Maps'],
+    category: 'Full Stack',
+    liveLink: 'https://restuarent-website-flax.vercel.app/',
+    githubLink: 'https://github.com/grontho69/restuarent-website',
+    featured: true,
+    highlights: [
+      'Multi-portal UI (Customer, Kitchen KDS, Rider Dispatch, Admin)',
+      'Interactive Leaflet map live delivery GPS tracking',
+      'Hybrid MongoDB datastore with real-time order states',
+      'Cutting edge React 19 & Next.js 16 architecture',
+    ],
+  },
+  {
+    id: 5,
+    title: '🤖 AI Job Search Agent',
+    description:
+      'An AI-powered job search platform that uses machine learning to match candidates with suitable opportunities.',
+    longDescription:
+      'Cutting-edge AI job search platform leveraging machine learning algorithms to analyze candidate profiles and match them with relevant job opportunities, enhancing the recruitment process for both candidates and employers.',
+    image: '',
+    tags: ['Next.js 16', 'Python', 'TypeScript', 'Tailwind CSS', 'MongoDB', 'Groq', 'Google Cloud AI'],
+    category: 'API & Full Stack',
+    liveLink: 'https://job-search-agent-pearl.vercel.app/',
+    githubLink: 'https://github.com/grontho69/Job-search-agent',
+    featured: true,
+    highlights: [
+      'Searches LinkedIn for jobs posted in the last 24 hours using your keywords',
+      'only processes jobs above your threshold (default 80%)',
+      'Logs everything to Google Sheets — job title, company, AI score, rationale, CV link, and job link',
+      'Never repeats jobs — tracks applied job IDs so you always get fresh listings',
     ],
   },
 ]
@@ -163,28 +202,12 @@ export const projectCategories = ['All', 'Full Stack', 'Frontend', 'Backend', 'A
 // EXPERIENCE & EDUCATION TIMELINE
 // ============================================================
 export const experiences = [
-  {
-    type: 'work', // 'work' or 'education'
-    title: 'Full Stack Developer', // TODO: Update
-    company: 'Company Name', // TODO: Update
-    period: '2024 – Present',
-    location: 'Bangladesh',
-    description:
-      'Developed and maintained scalable web applications using MERN stack. Led frontend architecture decisions and contributed to backend API design.',
-    highlights: [
-      'Built RESTful APIs with Node.js and Express',
-      'Implemented React frontend with TypeScript',
-      'Optimized MongoDB queries for 40% performance gain',
-      'Containerized services using Docker',
-    ],
-    technologies: ['React.js', 'Node.js', 'MongoDB', 'Docker', 'TypeScript'],
-    icon: '💼',
-  },
+
   {
     type: 'education',
-    title: 'Bachelor of Science in Computer Science', // TODO: Update
-    company: 'University Name', // TODO: Update
-    period: '2020 – 2024',
+    title: 'Diploma in Computer Science & Technology', // TODO: Update
+    company: 'Kushtia Polytechnic Institute', // TODO: Update
+    period: '2024 – Present',
     location: 'Bangladesh',
     description:
       'Studied core computer science fundamentals including algorithms, data structures, databases, and software engineering principles.',
