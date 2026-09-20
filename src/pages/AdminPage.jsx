@@ -10,6 +10,7 @@ import {
 import toast from 'react-hot-toast'
 import { api } from '../lib/api'
 import { ADMIN_SECRET_ROUTE } from '../data/portfolioData'
+import ImageUploader from '../components/ImageUploader'
 
 const AUTH_KEY = 'portfolio_admin_token'
 function getToken() { return localStorage.getItem(AUTH_KEY) }
@@ -42,7 +43,7 @@ function AdminLogin({ onLogin }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4"
       style={{ background: 'radial-gradient(ellipse at center, #0d1424 0%, #030712 100%)' }}>
-      <div className="fixed inset-0 opacity-30" style={{
+      <div className="fixed inset-0 opacity-30 pointer-events-none -z-10" style={{
         backgroundImage: 'linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
       }} />
@@ -158,8 +159,11 @@ function PostEditor({ post, onSave, onCancel }) {
           </div>
         </div>
         <div>
-          <label className="block text-xs text-slate-500 mb-1">Cover Image URL (optional)</label>
-          <input name="coverImage" value={form.coverImage} onChange={handleChange} placeholder="https://example.com/image.jpg" className="input-field text-sm" />
+          <ImageUploader
+            value={form.coverImage}
+            onChange={(url) => setForm(prev => ({ ...prev, coverImage: url }))}
+            label="Cover Image"
+          />
         </div>
         <div>
           <label className="block text-xs text-slate-500 mb-1">Excerpt / Short Summary</label>
@@ -184,12 +188,12 @@ function ProjectEditor({ project, onSave, onCancel }) {
     description: project?.description || '',
     longDescription: project?.longDescription || '',
     image: project?.image || '',
-    tags: (project?.tags || []).join(', '),
+    tags: Array.isArray(project?.tags) ? project.tags.join(', ') : (typeof project?.tags === 'string' ? project.tags : ''),
     category: project?.category || 'Full Stack',
     liveLink: project?.liveLink || '',
     githubLink: project?.githubLink || '',
     featured: project?.featured ?? false,
-    highlights: (project?.highlights || []).join('\n'),
+    highlights: Array.isArray(project?.highlights) ? project.highlights.join('\n') : (typeof project?.highlights === 'string' ? project.highlights : ''),
     published: project?.published ?? true,
   })
   const [saving, setSaving] = useState(false)
@@ -207,8 +211,8 @@ function ProjectEditor({ project, onSave, onCancel }) {
     try {
       const data = {
         ...form,
-        tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
-        highlights: form.highlights.split('\n').map(h => h.trim()).filter(Boolean),
+        tags: typeof form.tags === 'string' ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        highlights: typeof form.highlights === 'string' ? form.highlights.split('\n').map(h => h.trim()).filter(Boolean) : [],
       }
       const result = isNew ? await api.projects.create(data) : await api.projects.update(project._id, data)
       onSave(result)
@@ -270,23 +274,17 @@ function ProjectEditor({ project, onSave, onCancel }) {
             placeholder="Full description with more context, challenges, and solutions..." className="input-field text-sm resize-none" />
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">Project Image URL</label>
-            <div className="flex gap-2">
-              <input name="image" value={form.image} onChange={handleChange} placeholder="https://example.com/screenshot.png" className="input-field text-sm flex-1" />
-            </div>
-            {form.image && (
-              <div className="mt-2 h-20 rounded-lg overflow-hidden border border-indigo-500/20">
-                <img src={form.image} alt="Preview" className="w-full h-full object-cover"
-                  onError={(e) => { e.target.parentElement.style.display = 'none' }} />
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="block text-xs text-slate-500 mb-1">Tech Stack Tags (comma separated)</label>
-            <input name="tags" value={form.tags} onChange={handleChange} placeholder="React.js, Node.js, MongoDB, Docker" className="input-field text-sm" />
-          </div>
+        <div>
+          <ImageUploader
+            value={form.image}
+            onChange={(url) => setForm(prev => ({ ...prev, image: url }))}
+            label="Project Image / Screenshot"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs text-slate-500 mb-1">Tech Stack Tags (comma separated)</label>
+          <input name="tags" value={form.tags} onChange={handleChange} placeholder="React.js, Node.js, MongoDB, Docker" className="input-field text-sm" />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -321,9 +319,11 @@ function PostsTab() {
     setLoading(true)
     try {
       const data = await api.posts.getAll(true)
-      setPosts(data)
+      setPosts(Array.isArray(data) ? data : [])
     } catch (err) {
+      console.error('Error loading posts:', err)
       toast.error('Failed to load posts: ' + err.message)
+      setPosts([])
     }
     setLoading(false)
   }, [])
@@ -351,18 +351,20 @@ function PostsTab() {
 
   if (editing) return <PostEditor post={editing === 'new' ? null : editing} onSave={handleSave} onCancel={() => setEditing(null)} />
 
+  const postsList = Array.isArray(posts) ? posts : []
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-display font-bold text-white">Blog Posts</h2>
-          <p className="text-slate-500 text-sm">{posts.length} total · {posts.filter(p => p.published).length} published</p>
+          <p className="text-slate-500 text-sm">{postsList.length} total · {postsList.filter(p => p.published).length} published</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={load} className="p-2 rounded-xl text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30 transition-all">
+          <button type="button" onClick={load} className="p-2 rounded-xl text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30 transition-all cursor-pointer">
             <RefreshCw size={16} />
           </button>
-          <button onClick={() => setEditing('new')} className="btn-primary py-2 text-sm">
+          <button type="button" onClick={() => setEditing('new')} className="btn-primary py-2 text-sm cursor-pointer">
             <span className="flex items-center gap-2"><Plus size={16} /> New Post</span>
           </button>
         </div>
@@ -372,17 +374,17 @@ function PostsTab() {
         <div className="flex items-center justify-center py-16">
           <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
         </div>
-      ) : posts.length === 0 ? (
+      ) : postsList.length === 0 ? (
         <div className="card-glow p-12 text-center">
           <FileText size={40} className="text-slate-600 mx-auto mb-3" />
           <p className="text-slate-400 mb-4">No posts yet. Create your first article!</p>
-          <button onClick={() => setEditing('new')} className="btn-primary text-sm">
+          <button type="button" onClick={() => setEditing('new')} className="btn-primary text-sm cursor-pointer">
             <span className="flex items-center gap-2"><Plus size={15} /> Create First Post</span>
           </button>
         </div>
       ) : (
         <div className="space-y-3">
-          {[...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(post => (
+          {[...postsList].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(post => (
             <div key={post._id} className="card-glow p-4 flex items-center gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
@@ -401,15 +403,15 @@ function PostsTab() {
                   className="p-2 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all" title="Preview">
                   <ExternalLink size={16} />
                 </a>
-                <button onClick={() => handleTogglePublish(post)}
-                  className={`p-2 rounded-lg transition-all ${post.published ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-yellow-400 hover:bg-yellow-500/10'}`}
+                <button type="button" onClick={() => handleTogglePublish(post)}
+                  className={`p-2 rounded-lg transition-all cursor-pointer ${post.published ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-yellow-400 hover:bg-yellow-500/10'}`}
                   title={post.published ? 'Unpublish' : 'Publish'}>
                   {post.published ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                 </button>
-                <button onClick={() => setEditing(post)} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all" title="Edit">
+                <button type="button" onClick={() => setEditing(post)} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer" title="Edit">
                   <Edit3 size={16} />
                 </button>
-                <button onClick={() => handleDelete(post._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all" title="Delete">
+                <button type="button" onClick={() => handleDelete(post._id)} className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer" title="Delete">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -431,9 +433,11 @@ function ProjectsTab() {
     setLoading(true)
     try {
       const data = await api.projects.getAll(true)
-      setProjects(data)
+      setProjects(Array.isArray(data) ? data : [])
     } catch (err) {
+      console.error('Error loading projects:', err)
       toast.error('Failed to load projects: ' + err.message)
+      setProjects([])
     }
     setLoading(false)
   }, [])
@@ -461,18 +465,20 @@ function ProjectsTab() {
 
   if (editing) return <ProjectEditor project={editing === 'new' ? null : editing} onSave={handleSave} onCancel={() => setEditing(null)} />
 
+  const projectsList = Array.isArray(projects) ? projects : []
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-display font-bold text-white">Projects</h2>
-          <p className="text-slate-500 text-sm">{projects.length} total · {projects.filter(p => p.published !== false).length} visible</p>
+          <p className="text-slate-500 text-sm">{projectsList.length} total · {projectsList.filter(p => p.published !== false).length} visible</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={load} className="p-2 rounded-xl text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30 transition-all">
+          <button type="button" onClick={load} className="p-2 rounded-xl text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30 transition-all cursor-pointer">
             <RefreshCw size={16} />
           </button>
-          <button onClick={() => setEditing('new')} className="btn-primary py-2 text-sm">
+          <button type="button" onClick={() => setEditing('new')} className="btn-primary py-2 text-sm cursor-pointer">
             <span className="flex items-center gap-2"><Plus size={16} /> New Project</span>
           </button>
         </div>
@@ -482,18 +488,18 @@ function ProjectsTab() {
         <div className="flex items-center justify-center py-16">
           <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
         </div>
-      ) : projects.length === 0 ? (
+      ) : projectsList.length === 0 ? (
         <div className="card-glow p-12 text-center">
           <Rocket size={40} className="text-slate-600 mx-auto mb-3" />
           <p className="text-slate-400 mb-4">No projects yet. Add your first project!</p>
-          <button onClick={() => setEditing('new')} className="btn-primary text-sm">
+          <button type="button" onClick={() => setEditing('new')} className="btn-primary text-sm cursor-pointer">
             <span className="flex items-center gap-2"><Plus size={15} /> Add First Project</span>
           </button>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
-          {projects.map(project => (
-            <div key={project._id} className="card-glow p-4 flex flex-col gap-3">
+          {projectsList.map(project => (
+            <div key={project._id || project.id} className="card-glow p-4 flex flex-col gap-3">
               {project.image && (
                 <div className="h-32 rounded-xl overflow-hidden bg-dark-700">
                   <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
@@ -504,10 +510,10 @@ function ProjectsTab() {
                   {project.featured && <Star size={12} className="text-yellow-400 fill-yellow-400" />}
                   <span className={`w-2 h-2 rounded-full ${project.published !== false ? 'bg-emerald-400' : 'bg-red-400'}`} />
                   <h3 className="text-white font-medium text-sm truncate">{project.title}</h3>
-                  <span className="tag text-xs ml-auto">{project.category}</span>
+                  <span className="tag text-xs ml-auto">{project.category || 'Full Stack'}</span>
                 </div>
                 <p className="text-slate-500 text-xs line-clamp-2">{project.description}</p>
-                {project.tags?.length > 0 && (
+                {Array.isArray(project.tags) && project.tags.length > 0 && (
                   <div className="flex gap-1 mt-2 flex-wrap">
                     {project.tags.slice(0, 4).map(t => <span key={t} className="tag text-xs">{t}</span>)}
                   </div>
@@ -517,14 +523,14 @@ function ProjectsTab() {
                 {project.liveLink && <a href={project.liveLink} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-400 transition-colors" title="Live"><ExternalLink size={14} /></a>}
                 {project.githubLink && <a href={project.githubLink} target="_blank" rel="noreferrer" className="p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors" title="GitHub"><Github size={14} /></a>}
                 <div className="ml-auto flex gap-1">
-                  <button onClick={() => handleTogglePublish(project)}
-                    className={`p-1.5 rounded-lg transition-all ${project.published !== false ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-red-400 hover:bg-red-500/10'}`}>
+                  <button type="button" onClick={() => handleTogglePublish(project)}
+                    className={`p-1.5 rounded-lg transition-all cursor-pointer ${project.published !== false ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-red-400 hover:bg-red-500/10'}`}>
                     {project.published !== false ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
                   </button>
-                  <button onClick={() => setEditing(project)} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                  <button type="button" onClick={() => setEditing(project)} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
                     <Edit3 size={15} />
                   </button>
-                  <button onClick={() => handleDelete(project._id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                  <button type="button" onClick={() => handleDelete(project._id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
                     <Trash2 size={15} />
                   </button>
                 </div>
@@ -556,8 +562,9 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-screen" style={{ background: 'radial-gradient(ellipse at top, #0d1424 0%, #030712 100%)' }}>
-      <div className="fixed inset-0 opacity-20" style={{
+    <div className="min-h-screen relative" style={{ background: 'radial-gradient(ellipse at top, #0d1424 0%, #030712 100%)' }}>
+      {/* Fixed neural grid - pointer-events-none prevents blocking clicks */}
+      <div className="fixed inset-0 opacity-20 pointer-events-none z-0" style={{
         backgroundImage: 'linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
       }} />
@@ -571,31 +578,38 @@ export default function AdminPage() {
             <span className="tag text-xs hidden sm:inline">🔒 Secure</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/" target="_blank" className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-1.5">
+            <Link to="/" target="_blank" className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-1.5 cursor-pointer">
               <LayoutDashboard size={15} /><span className="hidden sm:inline">View Portfolio</span>
             </Link>
-            <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-red-400 transition-colors">
+            <button type="button" onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-red-400 transition-colors cursor-pointer">
               <LogOut size={15} /><span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
-        <div className="flex gap-2 mb-6">
+      {/* Tabs & Content Container - relative z-10 ensures it's above background grid */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+        <div className="flex gap-3 mb-6 border-b border-white/10 pb-4">
           {tabs.map(({ id, label, icon: Icon }) => (
-            <button key={id} onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                activeTab === id ? 'bg-indigo-500 text-white shadow-glow' : 'text-slate-400 hover:text-white border border-white/10 hover:border-indigo-500/30'
-              }`}>
-              <Icon size={16} />{label}
+            <button
+              key={id}
+              type="button"
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer select-none ${
+                activeTab === id
+                  ? 'bg-indigo-600 text-white shadow-glow border border-indigo-400'
+                  : 'text-slate-400 hover:text-white bg-dark-700/60 border border-white/10 hover:border-indigo-500/40 hover:bg-white/5'
+              }`}
+            >
+              <Icon size={16} />
+              <span>{label}</span>
             </button>
           ))}
         </div>
 
         {/* Content */}
-        <div className="relative z-10 pb-12">
+        <div className="pb-12">
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
               {activeTab === 'posts' && <PostsTab />}

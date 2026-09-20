@@ -436,6 +436,48 @@ app.delete('/api/projects', requireAuth, async (req, res) => {
   }
 })
 
+// ─── IMAGE UPLOAD (ImgBB API) ─────────────────────────────────
+app.post('/api/upload', requireAuth, async (req, res) => {
+  try {
+    const { image, apiKey: customKey } = req.body
+    if (!image) return res.status(400).json({ error: 'No image data provided' })
+
+    const apiKey = customKey || process.env.IMGBB_API_KEY
+    if (!apiKey) {
+      return res.status(400).json({
+        error: 'ImgBB API key is missing. Please set IMGBB_API_KEY in .env or provide it in the upload form.'
+      })
+    }
+
+    const base64Data = image.includes('base64,') ? image.split('base64,')[1] : image
+
+    const formData = new FormData()
+    formData.append('image', base64Data)
+
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+    if (!data.success) {
+      return res.status(response.status || 400).json({
+        error: data.error?.message || 'ImgBB upload failed'
+      })
+    }
+
+    res.json({
+      url: data.data.url,
+      display_url: data.data.display_url,
+      thumb_url: data.data.thumb?.url,
+      delete_url: data.data.delete_url,
+      title: data.data.title,
+    })
+  } catch (err) {
+    res.status(500).json({ error: 'Upload failed: ' + err.message })
+  }
+})
+
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({

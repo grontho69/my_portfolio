@@ -1,10 +1,22 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Github, Linkedin, Mail, Twitter, Code2, Heart, ArrowUp } from 'lucide-react'
 import { personalInfo, socialLinks } from '../data/portfolioData'
 
 export default function Footer() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const year = new Date().getFullYear()
+
+  const handleQuickLink = (id) => {
+    if (location.pathname === '/') {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      navigate('/#' + id)
+    }
+  }
 
   const socialIcons = [
     { icon: Github, href: socialLinks.github, label: 'GitHub' },
@@ -24,7 +36,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Brand */}
           <div className="flex flex-col items-center md:items-start gap-1">
-            <Link to="/" className="flex items-center gap-2 group" onClick={scrollToTop}>
+            <Link to="/" className="flex items-center gap-2 group cursor-pointer" onClick={scrollToTop}>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{ background: 'linear-gradient(135deg, #6366f1, #06b6d4)' }}>
                 <Code2 size={16} className="text-white" />
@@ -40,13 +52,28 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="flex items-center gap-6 text-sm">
-            <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-slate-400 hover:text-white transition-colors">About</button>
-            <button onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-slate-400 hover:text-white transition-colors">Projects</button>
-            <Link to="/blog" className="text-slate-400 hover:text-white transition-colors">Blog</Link>
-            <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-slate-400 hover:text-white transition-colors">Contact</button>
+            <button
+              type="button"
+              onClick={() => handleQuickLink('about')}
+              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              About
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickLink('projects')}
+              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              Projects
+            </button>
+            <Link to="/blog" className="text-slate-400 hover:text-white transition-colors cursor-pointer">Blog</Link>
+            <button
+              type="button"
+              onClick={() => handleQuickLink('contact')}
+              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              Contact
+            </button>
           </div>
 
           {/* Social Links */}

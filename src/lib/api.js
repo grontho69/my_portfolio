@@ -97,4 +97,14 @@ export const api = {
         headers: authHeaders(),
       }),
   },
+
+  // ─── Image Upload (ImgBB) ───────────────────────────────────
+  upload: {
+    image: (base64OrDataUrl, apiKey) =>
+      request(`${BASE}/upload`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ image: base64OrDataUrl, apiKey }),
+      }),
+  },
 }

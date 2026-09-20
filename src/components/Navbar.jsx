@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, Code2, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { personalInfo, navItems } from '../data/portfolioData'
@@ -9,28 +9,31 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const location = useLocation()
+  const navigate = useNavigate()
 
-  // Scroll detection for navbar background
+  // Scroll detection for navbar background & active section
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
 
-      // Active section tracking
-      const sections = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
-      const current = sections.find((section) => {
-        const el = document.getElementById(section)
-        if (el) {
-          const rect = el.getBoundingClientRect()
-          return rect.top <= 100 && rect.bottom >= 100
-        }
-        return false
-      })
-      if (current) setActiveSection(current)
+      if (location.pathname === '/') {
+        // Active section tracking only on homepage
+        const sections = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
+        const current = sections.find((section) => {
+          const el = document.getElementById(section)
+          if (el) {
+            const rect = el.getBoundingClientRect()
+            return rect.top <= 120 && rect.bottom >= 120
+          }
+          return false
+        })
+        if (current) setActiveSection(current)
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [location.pathname])
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -39,18 +42,37 @@ export default function Navbar() {
 
   const handleNavClick = (href) => {
     setIsOpen(false)
-    if (href.startsWith('#')) {
-      const id = href.slice(1)
-      const el = document.getElementById(id)
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' })
+
+    // If already on homepage, smooth scroll directly
+    if (location.pathname === '/') {
+      if (href === '#home' || href === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else if (href.startsWith('#')) {
+        const id = href.slice(1)
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }
+    } else {
+      // If on another page (e.g. /blog or /blog/:slug)
+      if (href === '#home' || href === '/') {
+        navigate('/')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else if (href.startsWith('#')) {
+        navigate('/' + href)
+      } else {
+        navigate(href)
       }
     }
   }
 
   const isActive = (href) => {
-    if (href.startsWith('#')) {
-      return activeSection === href.slice(1)
+    if (location.pathname === '/') {
+      if (href.startsWith('#')) {
+        return activeSection === href.slice(1)
+      }
+      return false
     }
     return location.pathname === href
   }
@@ -92,8 +114,9 @@ export default function Navbar() {
                 item.href.startsWith('#') ? (
                   <button
                     key={item.label}
+                    type="button"
                     onClick={() => handleNavClick(item.href)}
-                    className={`nav-link ${isActive(item.href) ? 'active text-white' : ''}`}
+                    className={`nav-link cursor-pointer ${isActive(item.href) ? 'active text-white' : ''}`}
                   >
                     {item.label}
                   </button>
@@ -184,8 +207,9 @@ export default function Navbar() {
                   >
                     {item.href.startsWith('#') ? (
                       <button
+                        type="button"
                         onClick={() => handleNavClick(item.href)}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                        className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                           isActive(item.href)
                             ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
                             : 'text-slate-300 hover:text-white hover:bg-white/5'

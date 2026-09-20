@@ -1,9 +1,29 @@
-import { Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import ParticleBackground from '../components/ParticleBackground'
 
 export default function MainLayout() {
+  const location = useLocation()
+
+  // Handle hash navigation across different routes (e.g. from /blog -> /#projects)
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '')
+      const timer = setTimeout(() => {
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 150)
+      return () => clearTimeout(timer)
+    } else if (location.pathname === '/') {
+      // If user clicked home or logo from another page, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [location.pathname, location.hash])
+
   return (
     <div className="relative min-h-screen bg-dark-800 overflow-x-hidden">
       {/* Animated Background */}
