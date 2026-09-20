@@ -1,4 +1,8 @@
-/*
-  React Router SPA redirects for Netlify
-*/
-/*  /index.html  200
+# Netlify API Redirects to Serverless Functions
+/api/auth       /.netlify/functions/auth       200!
+/api/posts      /.netlify/functions/posts      200!
+/api/projects   /.netlify/functions/projects   200!
+/api/upload     /.netlify/functions/upload     200!
+
+# SPA Client-side Routing Fallback
+/*              /index.html                    200
